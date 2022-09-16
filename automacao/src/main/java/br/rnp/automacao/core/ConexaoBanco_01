@@ -1,0 +1,87 @@
+package com.advantageonlineshopping.core;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class ConectarBancoTestNew {
+
+    public static String resultado = null;
+    // Connection object
+    static Connection con = null;
+    // Statement object
+    private static Statement stmt;
+    // Constant for Database URL
+    public static String DB_URL = "jdbc:mysql://localhost/banco_teste_automacao";
+    //Database Username
+    public static String DB_USER = "root";
+    // Database Password
+    public static String DB_PASSWORD = "123456";
+
+    @Before
+    public void setUp() throws Exception {
+        try {
+// Database connection
+            String dbClass = "com.mysql.cj.jdbc.Driver";
+//            String dbClass = "com.mysql.jdbc.Driver";
+            Class.forName(dbClass).newInstance();
+// Get connection to DB
+            Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+// Statement object to send the SQL statement to the Database
+            stmt = con.createStatement();
+            System.out.println("Conexão realizada com sucesso!");
+        } catch (Exception e) {
+            System.out.println("Driver do banco de dados não localizado");
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void test() {
+        try {
+            String query = "select * from banco_teste_automacao.massas";
+// Get the contents of userinfo table from DB
+            ResultSet res = stmt.executeQuery(query);
+// Print the result untill all the records are printed
+// res.next() returns true if there is any next record else returns false
+            while (res.next()) {
+                System.out.print(res.getString(1));
+                System.out.print(" " + res.getString(2));
+                System.out.print(" " + res.getString(3));
+                System.out.println(" " + res.getString(4));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String buscaDadosBase(String nomeColuna){
+
+        try {
+            String query = "select * from banco_teste_automacao.massas";
+            ResultSet res = stmt.executeQuery(query);
+
+            while (res.next()) {
+                resultado = res.getString(nomeColuna);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Consulta não realizada!");
+        }
+        return resultado;
+    }
+
+    @After
+    public void tearDown() throws Exception {
+// Close DB connection
+        if (con != null) {
+            con.close();
+        }
+    }
+}
